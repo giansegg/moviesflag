@@ -90,3 +90,6 @@ class MovieWithFlagAppTestCase(unittest.TestCase):
             self.assertEqual(movie["countries"][1]["flag"], "https://flagcdn.com/us.svg")
             self.assertEqual(movie["countries"][2]["flag"], "https://flagcdn.com/us.svg")
             self.assertEqual(movie["countries"][3]["flag"], "https://flagcdn.com/us.svg")
+
+            
+
