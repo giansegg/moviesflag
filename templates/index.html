@@ -1,31 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Movie with flags</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .movie { display: flex; align-items: center; margin-bottom: 10px; }
-        .movie img { width: 50px; height: auto; margin-right: 15px; }
-        .movie-info { display: flex; flex-direction: column; }
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .movie {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .movie img {
+        width: 50px;
+        height: auto;
+        margin-right: 15px;
+      }
+      .movie-info {
+        display: flex;
+        flex-direction: column;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Movie with Flags</h1>
     <div id="Movies">
-        {% for movie in movies %}
-            <div class="movie">
-                <div class="movie-info">
-                    <strong>{{ movie.title }}</strong>
-                    <span>Year: {{ movie.year }}</span>
-                    <span>Countries:</span>
-                    {% for country in movie.countries %}
-                        {{ country.name }} <img src="{{ country.flag }}"  alt="Flag of {{ country.name }}">
-                    {% endfor %}
-                </div>
-            </div>
-        {% endfor %}
+      {% for movie in movies %}
+      <div class="movie">
+        <div class="movie-info">
+          <strong>{{ movie.title }}</strong>
+          <span>Year: {{ movie.year }}</span>
+          <span>Countries:</span>
+          {% for country in movie.countries %} {{ country.name }}
+          <img src="{{ country.flag }}" alt="Flag of {{ country.name }}" />
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
     </div>
-</body>
+
+    <script>
+      let currentPage = 1;
+
+      function loadPage(page) {
+        const filter =
+          new URLSearchParams(window.location.search).get("filter") || "";
+        fetch(`/api/movies?filter=${filter}&page=${page}`)
+          .then((response) => response.json())
+          .then((movies) => {
+            const moviesContainer = document.getElementById("Movies");
+            moviesContainer.innerHTML = movies
+              .map(
+                (movie) => `
+                        <div class="movie">
+                            <div class="movie-info">
+                                <strong>${movie.title}</strong>
+                                <span>Year: ${movie.year}</span>
+                                <span>Countries:</span>
+                                ${movie.countries
+                                  .map(
+                                    (country) => `
+                                    ${country.name} <img src="${country.flag}" alt="Flag of ${country.name}">
+                                `
+                                  )
+                                  .join("")}
+                            </div>
+                        </div>
+                    `
+              )
+              .join("");
+            currentPage = page;
+          });
+      }
+
+      function nextPage() {
+        loadPage(currentPage + 1);
+      }
+
+      function prevPage() {
+        if (currentPage > 1) loadPage(currentPage - 1);
+      }
+    </script>
+
+    <button onclick="prevPage()">Previous</button>
+    <button onclick="nextPage()">Next</button>
+  </body>
 </html>
